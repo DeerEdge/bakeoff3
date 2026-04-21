@@ -8,19 +8,14 @@
 	<body>
 		<!-- You *may* edit the HTML this time. -->
 		<div id="main">
-			<div id="movieInfo"></div>
+			<div id="movieCards"></div>
 			<form>
-				<label for="titleSelect">Select a movie...</label>
-				<select id="titleSelect"></select>
-				<label for="timeSelect">Select a showtime...</label>
-				<select id="timeSelect"></select>
 				<hr>
-				<label for="numberOfTickets">How many tickets?</label>
-				<input type="range" id="numberOfTickets" min="1" max="200" value="1" step="1" oninput="this.nextElementSibling.value = this.value"/>
-				<output>1</output>
-
 				<label for="userName">Your name:</label>
 				<input type="text" id="userName"/>
+
+				<label for="numberOfTickets">How many tickets?</label>
+				<input type="number" id="numberOfTickets" min="1" max="200" value="1" style="width:4em"/>
 
 				<input type="button" id="submit" value="Send" />
 			</form>

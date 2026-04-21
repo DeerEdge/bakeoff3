@@ -4,16 +4,47 @@ body {
 	width: 100vw;
 	border: none;
 	margin: 0px;
-	text-align: center;
+}
+
+#main {
+	padding: 1em;
+}
+
+#movieCards {
 	display: flex;
-    align-items: center;
-    justify-content: center;
+	flex-wrap: wrap;
+	gap: 1em;
+	margin-bottom: 1em;
 }
-#preview {
-	outline: 1px solid #777;
-	padding: 2em;
-	max-width: 50vw;
+
+#movieCards div {
+	border: 1px solid #aaa;
+	border-radius: 6px;
+	padding: 1em;
+	cursor: pointer;
+	min-width: 150px;
 }
+
+#movieCards div.selected {
+	border-color: #000;
+	background-color: #eee;
+}
+
+#movieCards button {
+	margin: 0.4em 0.3em 0 0;
+	padding: 0.3em 0.6em;
+	cursor: pointer;
+	border: 1px solid #aaa;
+	border-radius: 4px;
+	background: #fff;
+}
+
+#movieCards button.selected {
+	background: #000;
+	color: #fff;
+	border-color: #000;
+}
+
 form {
-	padding: 2em;
+	padding: 1em 0;
 }

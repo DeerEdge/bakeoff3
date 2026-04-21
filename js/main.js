@@ -1,16 +1,14 @@
 // As always, we add our parts within a "load" event to make sure the HTML stuff has loaded first. 
-window.addEventListener("load", (e) => {
+window.addEventListener("load", () => {
     // Get references to the HTML elements that we need.
-    const titleSelect = document.getElementById("titleSelect");
-    const timeSelect = document.getElementById("timeSelect");
+    const movieCardsDiv = document.getElementById("movieCards");
     const submitButton = document.getElementById("submit");
     const numberOfTicketsTextBox = document.getElementById("numberOfTickets");
     const userNameTextBox = document.getElementById("userName");
-    const movieInfoDiv = document.getElementById("movieInfo");
     
 
 
-    const trial = new Trial("teamName");
+    const trial = new Trial("harrybotters");
     // getMovies is a function defined by the framework script. It will return a list of movies (in no guaranteed order). Each movie will be an object shaped like this:
     // {
     // 		title: string,
@@ -21,77 +19,72 @@ window.addEventListener("load", (e) => {
     //  	actors: list of strings
     // 	}
     const movies = trial.getMovies();
-    // Variable to store the current movie selection.
     let currentlySelectedMovie;
+    let currentlySelectedTime;
+    let selectedCard = null;
+    let selectedTimeBtn = null;
 
-
-    // for every movie in the list, add it to the movie selector dropdown
+    // For each movie in the list, we create one card per movie and the show times that are available for that movie
+    let firstCard = null;
     for (let i = 0; i < movies.length; i++) {
         const movie = movies[i];
-        const opt = document.createElement("option");
-        opt.innerText = movie.title; // for a dropdown menu, the "innerText" will be what is displayed to the user...
-        opt.value = i + ""; // ...and the "value" is another bit of data we can associate with it. In this case, we'll store the index of the movie in the movie list, so we can use it to retrieve the movie data later.
-        titleSelect.appendChild(opt);
-    }
-    // ...and then update the rest of the display with the info about the first movie on the list, which will be the default option selected.
-    selectMovie(movies[0]);
-    // Whenever a new item is chosen from the list, update the view
-    titleSelect.addEventListener("change", (event) => {
-        selectMovie(movies[titleSelect.value]);
-    });
+        const card = document.createElement("div");
 
+        const title = document.createElement("h3");
+        title.innerText = movie.title;
+        card.appendChild(title);
 
-    function selectMovie(movie) {
-        // set the currentlySelectedMovie to this one
-        currentlySelectedMovie = movie;
-        // update the display
-        displayMovieDetails(movie);
-        displayShowtimes(movie);
-    }
+        const showtimesDiv = document.createElement("div");
+        for (let j = 0; j < movie.movieTimes.length; j++) {
+            const timeString = movie.movieTimes[j];
+            const timeButton = document.createElement("button");
 
-
-    // Function to generate HTML elements containing title, details, etc for the movie to be displayed
-    function displayMovieDetails(movie) {
-        // clear anything that's currently in there out
-        movieInfoDiv.innerHTML = '';
-        // ...then make new elements
-        const titleBar = document.createElement("H2");
-        titleBar.innerText = movie.title;
-        const details = document.createElement("div");
-        const description = document.createElement("p");
-        description.innerText = movie.description;
-        details.appendChild(description);
-        const tags = document.createElement("p");
-        tags.innerText = "Tags: " + movie.genres.join(", ");
-        details.appendChild(tags);
-        const actors = document.createElement("p");
-        actors.innerText = "Starring: " + movie.actors.join(", ");
-        details.appendChild(actors);
-        movieInfoDiv.appendChild(titleBar);
-        movieInfoDiv.appendChild(details);
-    }
-
-
-    // Function that puts the showtimes of the given movie into the showtime dropdown list.
-    function displayShowtimes(movie) {
-        timeSelect.innerHTML = '';
-        for (let i = 0; i < movie.movieTimes.length; i++) {
-            const t = movie.movieTimes[i];
-            const opt = document.createElement("option");
-            opt.innerText = t;
-            opt.value = t;
-            timeSelect.appendChild(opt);
+            timeButton.type = "button";
+            timeButton.innerText = timeString;
+            timeButton.addEventListener("click", (clickEvent) => {
+                clickEvent.stopPropagation();
+                selectMovie(movie, card);
+                selectTime(timeString, timeButton);
+            });
+            showtimesDiv.appendChild(timeButton);
         }
+        card.appendChild(showtimesDiv);
+
+        card.addEventListener("click", () => {
+            selectMovie(movie, card);
+            selectTime(movie.movieTimes[0], card.querySelector("button"));
+        });
+        movieCardsDiv.appendChild(card);
+        if (firstCard === null) firstCard = card;
+    }
+
+    // We select the first movie and its first showtime initially
+    selectMovie(movies[0], firstCard);
+    selectTime(movies[0].movieTimes[0], firstCard.querySelector("button"));
+
+    function selectMovie(movie, card) {
+        currentlySelectedMovie = movie;
+
+        if (selectedCard) selectedCard.classList.remove("selected");
+        selectedCard = card;
+        card.classList.add("selected");
+    }
+
+    function selectTime(timeString, timeButton) {
+        currentlySelectedTime = timeString;
+        if (selectedTimeBtn) selectedTimeBtn.classList.remove("selected");
+        selectedTimeBtn = timeButton;
+        timeButton.classList.add("selected");
     }
 
     
     // When the user clicks the submit button, 
-    submitButton.addEventListener("click", (event) => {
+    submitButton.addEventListener("click", () => {
         // bundle up everything the Judge wants to see: the movie [a full movie object with all the metadata], the movieTime, the numberOfTickets (*as a number*), and the userName
         const userData = {
             movie: currentlySelectedMovie, // this should be the entire "movie" object, as described in lines 17-24 above
-            movieTime: timeSelect.value, // a string
-            numberOfTickets: parseInt(numberOfTicketsTextBox.value), // a number
+            movieTime: currentlySelectedTime, // a string
+            numberOfTickets: numberOfTicketsTextBox.valueAsNumber, // a number
             userName: userNameTextBox.value // a string
         };
         // ...and submit it to the Judge. 

@@ -14,8 +14,11 @@ window.addEventListener("load", () => {
     const durationOutput = document.getElementById("durationOutput");
     // genre filters element that contains the genre filters
     const genreFiltersDiv = document.getElementById("genreFilters");
-    // start after input to filter the movies by start time
-    
+    // start/end range inputs to filter movies by showtime
+    const startAfterInput = document.getElementById("startAfter");
+    const startBeforeInput = document.getElementById("startBefore");
+    const startRangeOutput = document.getElementById("startRangeOutput");
+
     // initialize
     const trial = new Trial("harrybotters");
     // getMovies is a function defined by the framework script. It will return a list of movies (in no guaranteed order). Each movie will be an object shaped like this:
@@ -247,9 +250,8 @@ window.addEventListener("load", () => {
     }
 
     // We select the first movie and its first showtime initially
-    firstCard = cardList[0].card;
-    selectMovie(movies[0], firstCard);
-    selectTime(movies[0].movieTimes[0], firstCard.querySelector("button"));
+    selectMovie(movies[0], cardList[0].card);
+    selectTime(movies[0].movieTimes[0], cardList[0].card.querySelector("button"));
 
     // selection state helpers for movie card and showtime button
     function selectMovie(movie, card) {

@@ -2,15 +2,19 @@
 window.addEventListener("load", () => {
     // Get references to the HTML elements that we need.
     const movieCardsDiv = document.getElementById("movieCards");
+    // submit button to submit the movie choice
     const submitButton = document.getElementById("submit");
+    // number of tickets text box to enter the number of tickets
     const numberOfTicketsTextBox = document.getElementById("numberOfTickets");
+    // user name text box to enter the user name
     const userNameTextBox = document.getElementById("userName");
+    // duration filter to filter the movies by duration
     const durationFilter = document.getElementById("durationFilter");
+    // duration output to display the duration filter
     const durationOutput = document.getElementById("durationOutput");
+    // genre filters element that contains the genre filters
     const genreFiltersDiv = document.getElementById("genreFilters");
-    const startAfterInput = document.getElementById("startAfter");
-    const startBeforeInput = document.getElementById("startBefore");
-    const startRangeOutput = document.getElementById("startRangeOutput");
+    // start after input to filter the movies by start time
     
     // initialize
     const trial = new Trial("harrybotters");
@@ -35,6 +39,7 @@ window.addEventListener("load", () => {
         const parts = timeString.split(":");
         const hoursString = parts[0];
         const minutesString = parts[1];
+        // return the total minutes
         return Number(hoursString) * 60 + Number(minutesString);
     }
 
@@ -46,24 +51,28 @@ window.addEventListener("load", () => {
         let hours12;
         let minutesString;
 
+        // determine if its AM or PM
         if (hours24 >= 12) {
             period = "PM";
         } else {
             period = "AM";
         }
 
+        // determine the 12 hour format
         if (hours24 % 12 === 0) {
             hours12 = 12;
         } else {
             hours12 = hours24 % 12;
         }
 
+        // determine the minutes string
         if (minutes < 10) {
             minutesString = "0" + minutes;
         } else {
             minutesString = String(minutes);
         }
 
+        // return the 12 hour format
         const timeString = hours12 + ":" + minutesString + " " + period;
         return timeString;
     }
@@ -80,12 +89,13 @@ window.addEventListener("load", () => {
     // For each movie in the list, we create one card per movie and the show times that are available for that movie
     const cardList = [];
     for (let i = 0; i < movies.length; i++) {
+        // We create a card for each movie, it contains the movie's title, description, showtimes, and genres
         const movie = movies[i];
         const card = document.createElement("div");
-
         const title = document.createElement("h3");
         title.innerText = movie.title;
 
+        // Loop through the movie's genres and create a container for each genre
         for (let k = 0; k < movie.genres.length; k++) {
             const genreTag = document.createElement("span");
             genreTag.innerText = movie.genres[k];
@@ -94,17 +104,21 @@ window.addEventListener("load", () => {
         }
         card.appendChild(title);
 
+        // We create a description block under the title, it mentions the movie's specific description and details
         const description = document.createElement("p");
         description.innerText = movie.description;
         card.appendChild(description);
 
         card.appendChild(document.createElement("hr"));
 
+        // We create a runtime and actors block under the description, it mentions the movie's specific runtime and actors
         const runtimeAndActors = document.createElement("p");
         runtimeAndActors.innerText = movie.movieLength + " min, Actors:   " + movie.actors.join(", ");
         card.appendChild(runtimeAndActors);
 
+        // We create a showtimes block under the description, it mentions the movie's specific showtime ranges, calculated by the duration and the start time
         const showtimesDiv = document.createElement("div");
+        // Loop through the movie's showtimes and create a button for each showtime
         for (let j = 0; j < movie.movieTimes.length; j++) {
             const timeString = movie.movieTimes[j];
             const timeButton = document.createElement("button");
@@ -112,6 +126,7 @@ window.addEventListener("load", () => {
             timeButton.type = "button";
             // more readable format
             timeButton.innerText = formatShowtimeRange(timeString, movie.movieLength);
+            // When the user clicks the showtime button, we select the movie and the showtime
             timeButton.addEventListener("click", (clickEvent) => {
                 clickEvent.stopPropagation();
                 selectMovie(movie, card);
@@ -121,6 +136,7 @@ window.addEventListener("load", () => {
         }
         card.appendChild(showtimesDiv);
 
+        // When the user clicks the movie card, we select the movie and the first showtime
         card.addEventListener("click", () => {
             selectMovie(movie, card);
             selectTime(movie.movieTimes[0], card.querySelector("button"));
@@ -133,20 +149,25 @@ window.addEventListener("load", () => {
     const allGenres = [];
     for (let i = 0; i < movies.length; i++) {
         for (let k = 0; k < movies[i].genres.length; k++) {
+            // if the genre is not already in the list, then we add it
             if (!allGenres.includes(movies[i].genres[k])) {
                 allGenres.push(movies[i].genres[k]);
             }
         }
     }
 
+    // Loop through the all genres and create a button for each genre
     for (let i = 0; i < allGenres.length; i++) {
         const genre = allGenres[i];
         const genreButton = document.createElement("button");
 
+        // We create a button for each genre
         genreButton.type = "button";
         genreButton.innerText = genre;
         genreButton.classList.add("genre-filter-btn");
+        // When the user clicks the genre button, we select the genre
         genreButton.addEventListener("click", () => {
+            // If the genre is already selected, we deselect it
             if (selectedGenres.includes(genre)) {
                 selectedGenres.splice(selectedGenres.indexOf(genre), 1);
                 genreButton.classList.remove("selected");
@@ -160,19 +181,22 @@ window.addEventListener("load", () => {
         genreFiltersDiv.appendChild(genreButton);
     }
 
+    // When the user changes the duration filter, we update the duration output and apply the filters
     durationFilter.addEventListener("input", () => {
         if (durationFilter.valueAsNumber < 240) {
             durationOutput.value = durationFilter.valueAsNumber + " min";
         } else {
             durationOutput.value = "Any";
         }
-        
+        // We apply the filters to the movie cards
         applyFilters();
     });
 
+    // When the user changes the start range filter, we update the start range output and apply the filters
     startAfterInput.addEventListener("input", updateStartRange);
     startBeforeInput.addEventListener("input", updateStartRange);
 
+    // When the user changes the start range filter, we update the range and apply the filters
     function updateStartRange() {
         startRangeOutput.value = to12HourString(startAfterInput.valueAsNumber) + " to " + to12HourString(startBeforeInput.valueAsNumber);
         applyFilters();
@@ -184,16 +208,16 @@ window.addEventListener("load", () => {
         const startAfterMinutes = startAfterInput.valueAsNumber;
         const startBeforeMinutes = startBeforeInput.valueAsNumber;
         
+        // loop through the movie cards and apply the filters
         for (let i = 0; i < cardList.length; i++) {
             const movie = cardList[i].movie;
-
             const passesRuntime = movie.movieLength <= maxMinutes;
-
             let passesGenre = false;
 
             if (selectedGenres.length === 0) {
                 passesGenre = true;
             } else {
+                // loop through the movie's genres and check if the genre is selected
                 for (let g = 0; g < movie.genres.length; g++) {
                     if (selectedGenres.includes(movie.genres[g])) {
                         passesGenre = true;
@@ -203,14 +227,17 @@ window.addEventListener("load", () => {
 
             let passesStartTime = false;
 
+            // loop through the movie's showtimes and check if the showtime is within the start range
             for (let t = 0; t < movie.movieTimes.length; t++) {
                 const startMinutes = toMinutes(movie.movieTimes[t]);
 
+                // If the showtime is within the start range, then it satisfies the start range filter
                 if (startMinutes >= startAfterMinutes && startMinutes <= startBeforeMinutes) {
                     passesStartTime = true;
                 }
             }
 
+            // if the movie passes all filters, then we display the movie card
             if (passesRuntime && passesGenre && passesStartTime) {
                 cardList[i].card.style.display = "";
             } else {
@@ -228,14 +255,17 @@ window.addEventListener("load", () => {
     function selectMovie(movie, card) {
         currentlySelectedMovie = movie;
 
+        // If the movie card is already selected, we deselect it
         if (selectedCard) selectedCard.classList.remove("selected");
         selectedCard = card;
         card.classList.add("selected");
     }
 
+    // When the user clicks the showtime button, we select the showtime
     function selectTime(timeString, timeButton) {
         currentlySelectedTime = timeString;
         
+        // If the showtime button is already selected, we deselect it
         if (selectedTimeBtn) selectedTimeBtn.classList.remove("selected");
         selectedTimeBtn = timeButton;
         timeButton.classList.add("selected");

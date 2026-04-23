@@ -12,8 +12,7 @@ window.addEventListener("load", () => {
     const startBeforeInput = document.getElementById("startBefore");
     const startRangeOutput = document.getElementById("startRangeOutput");
     
-
-
+    // initialize
     const trial = new Trial("harrybotters");
     // getMovies is a function defined by the framework script. It will return a list of movies (in no guaranteed order). Each movie will be an object shaped like this:
     // {
@@ -179,6 +178,7 @@ window.addEventListener("load", () => {
         applyFilters();
     }
 
+    // apply all active filters to movie card visibility
     function applyFilters() {
         const maxMinutes = durationFilter.valueAsNumber;
         const startAfterMinutes = startAfterInput.valueAsNumber;
@@ -224,6 +224,7 @@ window.addEventListener("load", () => {
     selectMovie(movies[0], firstCard);
     selectTime(movies[0].movieTimes[0], firstCard.querySelector("button"));
 
+    // selection state helpers for movie card and showtime button
     function selectMovie(movie, card) {
         currentlySelectedMovie = movie;
 
@@ -239,6 +240,7 @@ window.addEventListener("load", () => {
         selectedTimeBtn = timeButton;
         timeButton.classList.add("selected");
     }
+
 
     
     // When the user clicks the submit button, 

@@ -31,6 +31,7 @@ window.addEventListener("load", () => {
     let selectedTimeBtn = null;
     let selectedGenres = [];
 
+    // Changed showtime math to convert framework start times into start/end labels.
     function toMinutes(timeString) {
         const parts = timeString.split(":");
         const hoursString = parts[0];
@@ -38,6 +39,7 @@ window.addEventListener("load", () => {
         return Number(hoursString) * 60 + Number(minutesString);
     }
 
+    // Changed display format to 12 hour AM/PM 
     function to12HourString(totalMinutes) {
         const hours24 = Math.floor((totalMinutes % 1440) / 60);
         const minutes = totalMinutes % 60;
@@ -67,6 +69,7 @@ window.addEventListener("load", () => {
         return timeString;
     }
 
+    // Changed labels to start end format
     function formatShowtimeRange(startTimeString, movieLengthMinutes) {
         const startMinutes = toMinutes(startTimeString);
         const endMinutes = startMinutes + movieLengthMinutes;
@@ -108,6 +111,7 @@ window.addEventListener("load", () => {
             const timeButton = document.createElement("button");
 
             timeButton.type = "button";
+            // more readable format
             timeButton.innerText = formatShowtimeRange(timeString, movie.movieLength);
             timeButton.addEventListener("click", (clickEvent) => {
                 clickEvent.stopPropagation();

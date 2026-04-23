@@ -253,5 +253,11 @@ window.addEventListener("load", () => {
         // ...and submit it to the Judge. 
         // ===> Your code *must*, somewhere/somehow, call this: <===
         trial.submitMovieChoice(userData);
+
+        // submit button to flash green 
+        submitButton.classList.add("submitted");
+        window.setTimeout(() => {
+            submitButton.classList.remove("submitted");
+        }, 300);
     });
 });

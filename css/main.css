@@ -166,3 +166,8 @@ input[type="number"] {
 #submit:hover {
 	background: #333;
 }
+
+#submit.submitted {
+	background: #16a34a;
+	border-color: #15803d;
+}

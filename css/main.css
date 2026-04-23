@@ -1,11 +1,10 @@
-/* Example CSS. You may re-write any of this. */
 body {
 	height: 100vh;
 	width: 100vw;
 	border: none;
 	margin: 0px;
-	background: #f4f7fb;
-	color: #1f2937;
+	background: #f5f5f5;
+	color: #111;
 	font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -13,6 +12,12 @@ body {
 	padding: 1em;
 	max-width: 1200px;
 	margin: 0 auto;
+}
+
+#durationOutput {
+	font-size: 0.9em;
+	color: #444;
+	margin-right: 0.9em;
 }
 
 #movieCards {
@@ -23,54 +28,106 @@ body {
 }
 
 #movieCards div {
-	border: 1px solid #cfd8e3;
-	border-top: 4px solid #60a5fa;
+	border: 1px solid #ccc;
 	border-radius: 8px;
 	padding: 1em;
 	cursor: pointer;
 	min-width: 150px;
-	background: #ffffff;
-	box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-	transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+	max-width: 300px;
+	background: #fff;
+}
+
+#movieCards div p {
+	margin: 0.4em 0;
+	font-size: 0.85em;
+	color: #444;
+}
+
+#movieCards div hr {
+	border: none;
+	height: 1px;
+	background: #ddd;
+	margin: 0.5em 0;
 }
 
 #movieCards div.selected {
-	border-color: #2563eb;
-	background-color: #eff6ff;
-	box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+	border-color: #111;
+	background-color: #eee;
+}
+
+#movieCards div:hover {
+	border-color: #888;
 }
 
 #movieCards button {
 	margin: 0.4em 0.3em 0 0;
 	padding: 0.3em 0.6em;
 	cursor: pointer;
-	border: 1px solid #bfdbfe;
+	border: 1px solid #bbb;
 	border-radius: 4px;
-	background: #f8fafc;
-	color: #1e3a8a;
-	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+	background: #fff;
+	color: #111;
 }
 
 #movieCards button.selected {
-	background: #2563eb;
+	background: #111;
 	color: #fff;
-	border-color: #1d4ed8;
-}
-
-#movieCards div:hover {
-	border-color: #60a5fa;
+	border-color: #111;
 }
 
 #movieCards button:hover {
-	background: #eff6ff;
-	border-color: #60a5fa;
+	background: #eee;
+}
+
+.genre-tag {
+	display: inline-block;
+	font-size: 0.75em;
+	background: #eee;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	padding: 0.15em 0.45em;
+	margin: 0 0.2em 0 0.4em;
+	vertical-align: middle;
+}
+
+#genreFilters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.3em;
+	margin-bottom: 0.75em;
+}
+
+.genre-filter-btn {
+	padding: 0.25em 0.6em;
+	cursor: pointer;
+	border: 1px solid #bbb;
+	border-radius: 4px;
+	background: #fff;
+	color: #111;
+	font-size: 0.85em;
+}
+
+.genre-filter-btn.selected {
+	background: #111;
+	color: #fff;
+	border-color: #111;
+}
+
+.genre-filter-btn:hover {
+	background: #eee;
+}
+
+.filter-row {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.5em;
+	margin-top: 0.75em;
 }
 
 form {
-	padding: 1em 0;
-	margin-top: 1em;
-	background: #ffffff;
-	border: 1px solid #dbe5f0;
+	background: #fff;
+	border: 1px solid #ddd;
 	border-radius: 8px;
 	padding: 1em;
 }
@@ -78,7 +135,7 @@ form {
 hr {
 	border: none;
 	height: 1px;
-	background: #dbe5f0;
+	background: #ddd;
 	margin: 0 0 1em 0;
 }
 
@@ -89,31 +146,23 @@ label {
 
 input[type="text"],
 input[type="number"] {
-	border: 1px solid #cbd5e1;
+	border: 1px solid #ccc;
 	border-radius: 6px;
 	padding: 0.35em 0.5em;
 	background: #fff;
-	color: #0f172a;
+	color: #111;
 	margin-right: 0.9em;
 }
 
 #submit {
-	background: #2563eb;
+	background: #111;
 	color: #fff;
-	border: 1px solid #1d4ed8;
+	border: 1px solid #111;
 	border-radius: 6px;
 	padding: 0.45em 0.9em;
 	cursor: pointer;
 }
 
 #submit:hover {
-	background: #1d4ed8;
-}
-
-#movieCards div:focus-visible,
-#movieCards button:focus-visible,
-input:focus-visible,
-#submit:focus-visible {
-	outline: 3px solid #93c5fd;
-	outline-offset: 2px;
+	background: #333;
 }

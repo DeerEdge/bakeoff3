@@ -11,13 +11,27 @@
 			<div id="movieCards"></div>
 			<form>
 				<hr>
-				<label for="userName">Your name:</label>
-				<input type="text" id="userName"/>
+				<div id="genreFilters"></div>
+				<div class="filter-row">
+					<label for="durationFilter">Max runtime:</label>
+					<input type="range" id="durationFilter" min="0" max="240" value="240" step="5"/>
+					<output id="durationOutput">Any</output>
 
-				<label for="numberOfTickets">How many tickets?</label>
-				<input type="number" id="numberOfTickets" min="1" max="200" value="1" style="width:4em"/>
+					<label>Start from:</label>
+					<input type="range" id="startAfter" min="0" max="1440" value="0" step="30"/>
+					<label>to:</label>
+					<input type="range" id="startBefore" min="0" max="1440" value="1440" step="30"/>
+					<output id="startRangeOutput">12:00 AM – 12:00 AM</output>
+				</div>
+				<div class="filter-row">
+					<label for="userName">Your name:</label>
+					<input type="text" id="userName"/>
 
-				<input type="button" id="submit" value="Send" />
+					<label for="numberOfTickets">How many tickets?</label>
+					<input type="number" id="numberOfTickets" min="1" max="200" value="1" style="width:4em"/>
+
+					<input type="button" id="submit" value="Send" />
+				</div>
 			</form>
 		</div>
 	</body>

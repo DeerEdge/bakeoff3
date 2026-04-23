@@ -5,6 +5,12 @@ window.addEventListener("load", () => {
     const submitButton = document.getElementById("submit");
     const numberOfTicketsTextBox = document.getElementById("numberOfTickets");
     const userNameTextBox = document.getElementById("userName");
+    const durationFilter = document.getElementById("durationFilter");
+    const durationOutput = document.getElementById("durationOutput");
+    const genreFiltersDiv = document.getElementById("genreFilters");
+    const startAfterInput = document.getElementById("startAfter");
+    const startBeforeInput = document.getElementById("startBefore");
+    const startRangeOutput = document.getElementById("startRangeOutput");
     
 
 
@@ -23,37 +29,78 @@ window.addEventListener("load", () => {
     let currentlySelectedTime;
     let selectedCard = null;
     let selectedTimeBtn = null;
+    let selectedGenres = [];
 
     function toMinutes(timeString) {
-        const [hoursString, minutesString] = timeString.split(":");
+        const parts = timeString.split(":");
+        const hoursString = parts[0];
+        const minutesString = parts[1];
         return Number(hoursString) * 60 + Number(minutesString);
     }
 
     function to12HourString(totalMinutes) {
-        const minutesInDay = 24 * 60;
-        const wrappedMinutes = ((totalMinutes % minutesInDay) + minutesInDay) % minutesInDay;
-        const hours24 = Math.floor(wrappedMinutes / 60);
-        const minutes = wrappedMinutes % 60;
-        const period = hours24 >= 12 ? "PM" : "AM";
-        const hours12 = hours24 % 12 === 0 ? 12 : hours24 % 12;
-        return `${hours12}:${String(minutes).padStart(2, "0")} ${period}`;
+        const hours24 = Math.floor((totalMinutes % 1440) / 60);
+        const minutes = totalMinutes % 60;
+        let period;
+        let hours12;
+        let minutesString;
+
+        if (hours24 >= 12) {
+            period = "PM";
+        } else {
+            period = "AM";
+        }
+
+        if (hours24 % 12 === 0) {
+            hours12 = 12;
+        } else {
+            hours12 = hours24 % 12;
+        }
+
+        if (minutes < 10) {
+            minutesString = "0" + minutes;
+        } else {
+            minutesString = String(minutes);
+        }
+
+        const timeString = hours12 + ":" + minutesString + " " + period;
+        return timeString;
     }
 
     function formatShowtimeRange(startTimeString, movieLengthMinutes) {
         const startMinutes = toMinutes(startTimeString);
         const endMinutes = startMinutes + movieLengthMinutes;
-        return `${to12HourString(startMinutes)} - ${to12HourString(endMinutes)}`;
+        const rangeString = to12HourString(startMinutes) + " to " + to12HourString(endMinutes);
+        
+        return rangeString;
     }
 
     // For each movie in the list, we create one card per movie and the show times that are available for that movie
-    let firstCard = null;
+    const cardList = [];
     for (let i = 0; i < movies.length; i++) {
         const movie = movies[i];
         const card = document.createElement("div");
 
         const title = document.createElement("h3");
         title.innerText = movie.title;
+
+        for (let k = 0; k < movie.genres.length; k++) {
+            const genreTag = document.createElement("span");
+            genreTag.innerText = movie.genres[k];
+            genreTag.classList.add("genre-tag");
+            title.appendChild(genreTag);
+        }
         card.appendChild(title);
+
+        const description = document.createElement("p");
+        description.innerText = movie.description;
+        card.appendChild(description);
+
+        card.appendChild(document.createElement("hr"));
+
+        const runtimeAndActors = document.createElement("p");
+        runtimeAndActors.innerText = movie.movieLength + " min, Actors:   " + movie.actors.join(", ");
+        card.appendChild(runtimeAndActors);
 
         const showtimesDiv = document.createElement("div");
         for (let j = 0; j < movie.movieTimes.length; j++) {
@@ -76,10 +123,100 @@ window.addEventListener("load", () => {
             selectTime(movie.movieTimes[0], card.querySelector("button"));
         });
         movieCardsDiv.appendChild(card);
-        if (firstCard === null) firstCard = card;
+        cardList.push({card: card, movie: movie});
+    }
+
+    // Form all genre lists and have filter buttons for each genre
+    const allGenres = [];
+    for (let i = 0; i < movies.length; i++) {
+        for (let k = 0; k < movies[i].genres.length; k++) {
+            if (!allGenres.includes(movies[i].genres[k])) {
+                allGenres.push(movies[i].genres[k]);
+            }
+        }
+    }
+
+    for (let i = 0; i < allGenres.length; i++) {
+        const genre = allGenres[i];
+        const genreButton = document.createElement("button");
+
+        genreButton.type = "button";
+        genreButton.innerText = genre;
+        genreButton.classList.add("genre-filter-btn");
+        genreButton.addEventListener("click", () => {
+            if (selectedGenres.includes(genre)) {
+                selectedGenres.splice(selectedGenres.indexOf(genre), 1);
+                genreButton.classList.remove("selected");
+            } else {
+                selectedGenres.push(genre);
+                genreButton.classList.add("selected");
+            }
+            
+            applyFilters();
+        });
+        genreFiltersDiv.appendChild(genreButton);
+    }
+
+    durationFilter.addEventListener("input", () => {
+        if (durationFilter.valueAsNumber < 240) {
+            durationOutput.value = durationFilter.valueAsNumber + " min";
+        } else {
+            durationOutput.value = "Any";
+        }
+        
+        applyFilters();
+    });
+
+    startAfterInput.addEventListener("input", updateStartRange);
+    startBeforeInput.addEventListener("input", updateStartRange);
+
+    function updateStartRange() {
+        startRangeOutput.value = to12HourString(startAfterInput.valueAsNumber) + " to " + to12HourString(startBeforeInput.valueAsNumber);
+        applyFilters();
+    }
+
+    function applyFilters() {
+        const maxMinutes = durationFilter.valueAsNumber;
+        const startAfterMinutes = startAfterInput.valueAsNumber;
+        const startBeforeMinutes = startBeforeInput.valueAsNumber;
+        
+        for (let i = 0; i < cardList.length; i++) {
+            const movie = cardList[i].movie;
+
+            const passesRuntime = movie.movieLength <= maxMinutes;
+
+            let passesGenre = false;
+
+            if (selectedGenres.length === 0) {
+                passesGenre = true;
+            } else {
+                for (let g = 0; g < movie.genres.length; g++) {
+                    if (selectedGenres.includes(movie.genres[g])) {
+                        passesGenre = true;
+                    }
+                }
+            }
+
+            let passesStartTime = false;
+
+            for (let t = 0; t < movie.movieTimes.length; t++) {
+                const startMinutes = toMinutes(movie.movieTimes[t]);
+
+                if (startMinutes >= startAfterMinutes && startMinutes <= startBeforeMinutes) {
+                    passesStartTime = true;
+                }
+            }
+
+            if (passesRuntime && passesGenre && passesStartTime) {
+                cardList[i].card.style.display = "";
+            } else {
+                cardList[i].card.style.display = "none";
+            }
+        }
     }
 
     // We select the first movie and its first showtime initially
+    firstCard = cardList[0].card;
     selectMovie(movies[0], firstCard);
     selectTime(movies[0].movieTimes[0], firstCard.querySelector("button"));
 
@@ -93,6 +230,7 @@ window.addEventListener("load", () => {
 
     function selectTime(timeString, timeButton) {
         currentlySelectedTime = timeString;
+        
         if (selectedTimeBtn) selectedTimeBtn.classList.remove("selected");
         selectedTimeBtn = timeButton;
         timeButton.classList.add("selected");
